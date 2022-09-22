@@ -34,6 +34,9 @@ INSTALLED_APPS = [
     'apis',
     #DRF
     'rest_framework',
+    # django-rest-auth
+    "rest_framework_simplejwt",
+    "rest_framework.authtoken",
 ]
 
 MIDDLEWARE = [
@@ -120,3 +123,5 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 APPEND_SLASH = False
+
+AUTH_USER_MODEL = 'apis.User'
