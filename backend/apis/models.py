@@ -41,7 +41,7 @@ class UserManager(BaseUserManager):
 class User(AbstractUser):
     """유저 모델"""
     username = models.CharField(verbose_name="ID", max_length=20, unique=True)
-    email = models.CharField(verbose_name="이메일", max_length=100, null=True)
+    email = models.CharField(verbose_name="E-mail", max_length=100, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now = True)
 
