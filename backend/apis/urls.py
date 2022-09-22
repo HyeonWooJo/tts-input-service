@@ -1,11 +1,13 @@
 from django.urls import path
 
 from .views import (
-    SignupAPIView
+    SignupAPIView,
+    SigninAPIView,
+    DeleteUserView
 )
 
 urlpatterns = [
-    path("signup/", SignupAPIView.as_view()),
-    # path("signin/", SignInView.as_view()),
-    # path("delete/<int:pk>", DeleteUserView.as_view()),
+    path("users/signup/", SignupAPIView.as_view()),
+    path("users/signin/", SigninAPIView.as_view()),
+    path("users/<int:pk>/", DeleteUserView.as_view()),
 ]
