@@ -1,0 +1,43 @@
+version: "3"
+
+services:
+    mysql_aipark:
+      container_name: mysql_aipark
+      build: ./mysql
+      restart: always
+      tty: true
+      environment:
+        MYSQL_DATABASE: ${DB_NAME}
+        MYSQL_USER: ${DB_USER}
+        MYSQL_PASSWORD: ${DB_PASSWORD}
+        MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+      command: # 명령어 실행
+        - --character-set-server=utf8mb4
+        - --collation-server=utf8mb4_general_ci
+      ports:
+        - "3309:3309"
+      volumes:
+        - ./mysql/mysql_data:/var/lib/mysql
+        - ./mysql/sqls/:/docker-entrypoint-initdb.d/
+      networks:
+        - local
+
+    backend:
+      depends_on:
+        - mysql_aipark
+      links:
+        - mysql_aipark
+      restart: always
+      container_name: backend_aipark
+      build: ./backend
+      command: python manage.py runserver 0.0.0.0:8005
+      ports:
+        - "8005:8005"
+      volumes:
+        - ./backend:/backend
+      networks:
+        - local
+
+networks:
+  local:
+    driver: bridge
