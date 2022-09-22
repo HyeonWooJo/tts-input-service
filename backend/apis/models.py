@@ -1,5 +1,6 @@
-from django.db import models
+import uuid
 
+from django.db import models
 from django.contrib.auth.models import AbstractUser, BaseUserManager
 
 
@@ -69,7 +70,11 @@ class Audio(models.Model):
     """오디오 모델"""
     text = models.CharField(verbose_name="텍스트", max_length=300)
     speed = models.FloatField(verbose_name="스피드", max_length=10)
-    identifier = models.CharField(verbose_name="식별자", max_length=100)
+    identifier = models.UUIDField( 
+        default=uuid.uuid4,
+        unique=True,
+        editable=False
+        )
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now = True)
