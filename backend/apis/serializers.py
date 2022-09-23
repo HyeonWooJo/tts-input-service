@@ -62,16 +62,15 @@ class SignInSerializer(TokenObtainPairSerializer):
 
 class ProjectSerializer(serializers.ModelSerializer):
     """프로젝트 Serializer"""
-    password = serializers.CharField(
-        max_length=128,
-        min_length=8,
-        write_only=True
-    )
+    text = serializers.CharField()
+    speed = serializers.FloatField()
 
     class Meta:
-        model = Audio
+        model = Project
         fields = [
-            'text'
+            'project_title',
+            'text',
+            'speed',
         ]
 
     def validate_text(self, text):
@@ -107,3 +106,16 @@ class ProjectSerializer(serializers.ModelSerializer):
                 value.append(text[i])
 
         return value
+
+    def create(self, validated_data):
+        print(validated_data)
+        # project = Project.objects.create(
+        #     project_title = validated_data['project_title'],
+        #     user = request.user
+        # )
+        # audio = Audio.objects.create(
+        #     text = validated_data['text'],
+        #     speed = validated_data['speed'],
+        #     project = project
+        # )
+        # return project
