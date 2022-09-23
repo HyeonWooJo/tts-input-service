@@ -4,7 +4,8 @@ from .views import (
     SignupAPIView,
     SigninAPIView,
     DeleteUserView,
-    ProjectMixins
+    ProjectMixins,
+    ProjectDetailMixins
 )
 
 
@@ -13,4 +14,5 @@ urlpatterns = [
     path("users/signin/", SigninAPIView.as_view()),
     path("users/<int:pk>/", DeleteUserView.as_view()),
     path("projects/", ProjectMixins.as_view()),
+    path('projects/<int:pk>/', ProjectDetailMixins.as_view()),
 ]
