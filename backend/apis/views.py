@@ -1,7 +1,7 @@
 from django.contrib.auth import get_user_model
 from django.http import HttpResponse
 
-from rest_framework import status
+from rest_framework import status, mixins, generics
 from rest_framework.generics import CreateAPIView, DestroyAPIView
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
@@ -9,8 +9,15 @@ from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
+from rest_framework.exceptions import ValidationError
 
-from .serializers import SignupSerializer, SignInSerializer
+from .serializers import (
+    SignupSerializer, 
+    SignInSerializer,
+    ProjectSerializer
+)
+from .models import Project
+from core.utils import login_decorator
 
 
 class SignupAPIView(CreateAPIView):
@@ -73,3 +80,29 @@ class DeleteUserView(DestroyAPIView):
     :return: 없음
     """
     queryset = get_user_model().objects.all()
+
+
+class ProjectMixins(mixins.ListModelMixin,
+                    mixins.CreateModelMixin,
+                    generics.GenericAPIView):
+
+    queryset = Project.objects.all()
+    serializer_class = ProjectSerializer
+
+    @login_decorator
+    def post(self, request, *args, **kwargs):
+        """
+        프로젝트 생성 API
+        :endpoint: /api/project/
+        :return: project_title
+                text
+                speed
+        """
+        data = request.data
+        text = data['text']
+        if not text:
+            ValidationError('문자열이 비어있습니다.') 
+        
+        data['text'] = text[0]
+        data['user'] = request.user
+        return self.create(request, *args, **kwargs)
