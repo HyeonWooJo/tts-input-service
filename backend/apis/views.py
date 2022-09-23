@@ -9,6 +9,7 @@ from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
+from rest_framework.exceptions import ValidationError
 
 from .serializers import (
     SignupSerializer, 
@@ -97,4 +98,11 @@ class ProjectMixins(mixins.ListModelMixin,
                 text
                 speed
         """
+        data = request.data
+        text = data['text']
+        if not text:
+            ValidationError('문자열이 비어있습니다.') 
+        
+        data['text'] = text[0]
+        data['user'] = request.user
         return self.create(request, *args, **kwargs)

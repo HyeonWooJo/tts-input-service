@@ -62,8 +62,8 @@ class SignInSerializer(TokenObtainPairSerializer):
 
 class ProjectSerializer(serializers.ModelSerializer):
     """프로젝트 Serializer"""
-    text = serializers.CharField()
-    speed = serializers.FloatField()
+    text = serializers.CharField(write_only=True)
+    speed = serializers.FloatField(write_only=True)
 
     class Meta:
         model = Project
@@ -76,14 +76,8 @@ class ProjectSerializer(serializers.ModelSerializer):
     def validate_text(self, text):
         """텍스트 유효성 검사"""
 
-        """빈 문자열 제거"""
-        if not text:
-            ValidationError('문자열이 비어있습니다.') 
-        
-        text = text[0]
-        
         """텍스트에 한글, 영어, 숫자, 물음표, 느낌표, 마침표, 따옴표, 공백 외 다른 문자열 제거"""
-        REGEX_TEXT = '^[a-zA-Z가-힣0-9.,?!\"\'\s]'
+        REGEX_TEXT = '[^a-zA-Z가-힣0-9.,?!\"\'\s]'
         text = re.sub(REGEX_TEXT, '', text)
 
         """맨 앞과 뒤 공백 제거"""
@@ -108,14 +102,14 @@ class ProjectSerializer(serializers.ModelSerializer):
         return value
 
     def create(self, validated_data):
-        print(validated_data)
-        # project = Project.objects.create(
-        #     project_title = validated_data['project_title'],
-        #     user = request.user
-        # )
-        # audio = Audio.objects.create(
-        #     text = validated_data['text'],
-        #     speed = validated_data['speed'],
-        #     project = project
-        # )
-        # return project
+        user = self.context['request'].user
+        project = Project.objects.create(
+            project_title = validated_data['project_title'],
+            user = user
+        )
+        audio = Audio.objects.create(
+            text = validated_data['text'],
+            speed = validated_data['speed'],
+            project = project
+        )
+        return project
