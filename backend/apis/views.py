@@ -100,9 +100,37 @@ class ProjectMixins(mixins.ListModelMixin,
         """
         data = request.data
         text = data['text']
+
+        """빈 문자열 제거"""
         if not text:
-            ValidationError('문자열이 비어있습니다.') 
+            raise ValidationError('문자열이 비어있습니다.') 
         
         data['text'] = text[0]
-        data['user'] = request.user
         return self.create(request, *args, **kwargs)
+
+    @login_decorator
+    def get(self, request, *args, **kwargs):
+        """
+        프로젝트 조회 API
+        :endpoint: /api/projects/<int:pk>
+        :return: project_title
+                text
+                speed
+        """
+        return self.list(request, *args, **kwargs)
+
+
+class ProjectDetailMixins(mixins.RetrieveModelMixin, 
+                        mixins.UpdateModelMixin, 
+                        mixins.DestroyModelMixin, 
+                        generics.GenericAPIView):
+
+    queryset = Project.objects.all()
+    serializer_class = ProjectSerializer
+
+    def get(self, request, *args, **kwargs):
+        """
+        프로젝트 상세 조회 API
+        endpoint: /api/projects/<int:pk>/
+        """
+        return self.retrieve(request, *args, **kwargs)
