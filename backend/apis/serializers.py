@@ -1,7 +1,10 @@
+import re
+
 from rest_framework import serializers
+from rest_framework.exceptions import ValidationError
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
-from .models import User
+from .models import User, Project, Audio
 
 
 class SignupSerializer(serializers.ModelSerializer):
@@ -55,3 +58,52 @@ class SignInSerializer(TokenObtainPairSerializer):
             "refresh" : refresh_token,
         }
         return data
+
+
+class ProjectSerializer(serializers.ModelSerializer):
+    """프로젝트 Serializer"""
+    password = serializers.CharField(
+        max_length=128,
+        min_length=8,
+        write_only=True
+    )
+
+    class Meta:
+        model = Audio
+        fields = [
+            'text'
+        ]
+
+    def validate_text(self, text):
+        """텍스트 유효성 검사"""
+
+        """빈 문자열 제거"""
+        if not text:
+            ValidationError('문자열이 비어있습니다.') 
+        
+        text = text[0]
+        
+        """텍스트에 한글, 영어, 숫자, 물음표, 느낌표, 마침표, 따옴표, 공백 외 다른 문자열 제거"""
+        REGEX_TEXT = '^[a-zA-Z가-힣0-9.,?!\"\'\s]'
+        text = re.sub(REGEX_TEXT, '', text)
+
+        """맨 앞과 뒤 공백 제거"""
+        text = text.strip()
+
+        """.과 ?과 !를 구분자로 텍스트 쪼개기"""
+        text = re.split('([.|?|!])', text)
+
+        for i in range(len(text)):
+            if text[i] in ('.', '?', '!'):
+                text[i] += '*'
+
+        text = ''.join(text)
+        text = re.split('[*]', text)
+
+        value = []
+
+        for i in range(len(text)):
+            if len(text[i]) > 1:
+                value.append(text[i])
+
+        return value
