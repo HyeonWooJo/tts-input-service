@@ -76,7 +76,6 @@ class ProjectSerializer(serializers.ModelSerializer):
 
     def validate_text(self, text):
         value = text_validation(text)
-
         return value
 
     def create(self, validated_data):
@@ -91,3 +90,32 @@ class ProjectSerializer(serializers.ModelSerializer):
             project = project
         )
         return project
+
+
+class ProjectDetailSerializer(serializers.ModelSerializer):
+    """프로젝트 디테일 Serializer"""
+    text = serializers.SerializerMethodField()
+    speed = serializers.SerializerMethodField()
+    identifier = serializers.SerializerMethodField()
+    
+
+    class Meta:
+        model = Project
+        fields = [
+            'project_title',
+            'text',
+            'speed',
+            'identifier'
+        ]
+
+    def get_text(self, obj):
+        audio = Audio.objects.get(id=obj.id)
+        return audio.text
+
+    def get_speed(self, obj):
+        audio = Audio.objects.get(id=obj.id)
+        return audio.speed
+
+    def get_identifier(self, obj):
+        audio = Audio.objects.get(id=obj.id)
+        return audio.identifier
