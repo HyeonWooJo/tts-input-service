@@ -67,6 +67,7 @@ class ProjectSerializer(serializers.ModelSerializer):
     """프로젝트 Serializer"""
     text = serializers.CharField(write_only=True)
     speed = serializers.FloatField(write_only=True)
+    text_list = serializers.SerializerMethodField()
 
     class Meta:
         model = Project
@@ -74,7 +75,13 @@ class ProjectSerializer(serializers.ModelSerializer):
             'project_title',
             'text',
             'speed',
+            'text_list'
         ]
+
+    def get_text_list(self, obj):
+        audio = Audio.objects.get(project=obj)
+        text_list = [(text.id, text.text) for text in Text.objects.filter(audio=audio)]
+        return text_list
 
     def validate_text(self, text):
         value = text_validation(text)
