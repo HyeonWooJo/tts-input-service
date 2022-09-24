@@ -14,7 +14,8 @@ from rest_framework.exceptions import ValidationError
 from .serializers import (
     SignupSerializer, 
     SignInSerializer,
-    ProjectSerializer
+    ProjectSerializer,
+    ProjectDetailSerializer
 )
 from .models import Project
 from core.utils import login_decorator
@@ -126,7 +127,7 @@ class ProjectDetailMixins(mixins.RetrieveModelMixin,
                         generics.GenericAPIView):
 
     queryset = Project.objects.all()
-    serializer_class = ProjectSerializer
+    serializer_class = ProjectDetailSerializer
 
     def get(self, request, *args, **kwargs):
         """

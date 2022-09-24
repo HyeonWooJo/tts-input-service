@@ -4,7 +4,9 @@ from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
-from .models import User, Project, Audio
+from django.db import transaction
+
+from .models import User, Project, Audio, Text
 from core.utils import text_validation
 
 
@@ -76,18 +78,64 @@ class ProjectSerializer(serializers.ModelSerializer):
 
     def validate_text(self, text):
         value = text_validation(text)
-
         return value
 
+    @transaction.atomic
     def create(self, validated_data):
-        user = self.context['request'].user
-        project = Project.objects.create(
-            project_title = validated_data['project_title'],
-            user = user
-        )
-        audio = Audio.objects.create(
-            text = validated_data['text'],
-            speed = validated_data['speed'],
-            project = project
-        )
-        return project
+        try: 
+            user = self.context['request'].user
+            project = Project.objects.create(
+                project_title = validated_data['project_title'],
+                user = user
+            )
+            audio = Audio.objects.create(
+                speed = validated_data['speed'],
+                project = project
+            )
+
+            bulk_list = []
+            for text in validated_data['text']:
+                bulk_list.append(Text(text=text, audio=audio))
+
+            Text.objects.bulk_create(bulk_list)
+            return project
+        
+        except Exception as e:
+            transaction.set_rollback(rollback=True)
+            raise ValidationError(str(e))
+
+
+class ProjectDetailSerializer(serializers.ModelSerializer):
+    """프로젝트 디테일 Serializer"""
+    text = serializers.SerializerMethodField()
+    speed = serializers.SerializerMethodField()
+    identifier = serializers.SerializerMethodField()
+    
+    class Meta:
+        model = Project
+        fields = [
+            'project_title',
+            'text',
+            'speed',
+            'identifier'
+        ]
+
+    def get_text(self, obj):
+        """"page 별 10개의 문장까지 조회 가능"""
+        page = int(self.context['request'].query_params['page'])
+        page_size = 10
+        limit = int(page_size * page)
+        offset = int(limit - page_size)
+
+        audio = Audio.objects.get(project=obj)
+        texts = Text.objects.filter(audio=audio)[offset:limit]
+        text = ' '.join(text.text for text in texts)
+        return text
+
+    def get_speed(self, obj):
+        audio = Audio.objects.get(project=obj)
+        return audio.speed
+
+    def get_identifier(self, obj):
+        audio = Audio.objects.get(project=obj)
+        return audio.identifier

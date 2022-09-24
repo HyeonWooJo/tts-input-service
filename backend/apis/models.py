@@ -1,3 +1,4 @@
+from re import L
 import uuid
 
 from django.db import models
@@ -68,7 +69,7 @@ class Project(models.Model):
 
 class Audio(models.Model):
     """오디오 모델"""
-    text = models.CharField(verbose_name="텍스트", max_length=300)
+    
     speed = models.FloatField(verbose_name="스피드", max_length=10)
     identifier = models.UUIDField( 
         default=uuid.uuid4,
@@ -81,3 +82,12 @@ class Audio(models.Model):
 
     class Meta:
         db_table = "audios"
+
+
+class Text(models.Model):
+    """텍스트 모델"""
+    text = models.CharField(verbose_name="텍스트", max_length=300)
+    audio = models.ForeignKey(Audio, on_delete=models.CASCADE)
+
+    class Meta:
+        db_table = "texts"
