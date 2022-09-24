@@ -27,7 +27,6 @@ class SignupSerializer(serializers.ModelSerializer):
             'email',
         ]
 
-
     def create(self, validated_data):
         user = super().create(validated_data)
         user.set_password(validated_data['password'])
@@ -77,11 +76,9 @@ class ProjectSerializer(serializers.ModelSerializer):
             'speed',
         ]
 
-
     def validate_text(self, text):
         value = text_validation(text)
         return value
-
 
     @transaction.atomic
     def create(self, validated_data):
@@ -123,18 +120,21 @@ class ProjectDetailSerializer(serializers.ModelSerializer):
             'identifier'
         ]
 
-
     def get_text(self, obj):
+        """"page 별 10개의 문장까지 조회 가능"""
+        page = int(self.context['request'].query_params['page'])
+        page_size = 10
+        limit = int(page_size * page)
+        offset = int(limit - page_size)
+
         audio = Audio.objects.get(project=obj)
-        texts = Text.objects.filter(audio=audio)
+        texts = Text.objects.filter(audio=audio)[offset:limit]
         text = ' '.join(text.text for text in texts)
         return text
-
 
     def get_speed(self, obj):
         audio = Audio.objects.get(project=obj)
         return audio.speed
-
 
     def get_identifier(self, obj):
         audio = Audio.objects.get(project=obj)
