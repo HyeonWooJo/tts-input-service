@@ -7,7 +7,7 @@ from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from django.db import transaction
 
 from .models import User, Project, Audio, Text
-from core.utils import text_validation, audio_maker
+from core.utils import text_validation, AudioOperator
 
 
 class SignupSerializer(serializers.ModelSerializer):
@@ -113,7 +113,7 @@ class ProjectSerializer(serializers.ModelSerializer):
             audio = Audio.objects.create(
                 speed = validated_data['speed'],
                 project = project,
-                audio_file = audio_maker(project.id)
+                audio_file = AudioOperator.audio_maker(project.id)
             )
 
             bulk_list = []
@@ -174,7 +174,7 @@ class ProjectDetailSerializer(serializers.ModelSerializer):
         speed = validated_data['speed']
         
         for text_id, text in zip(text_ids, text_list):
-            text_instance = Text.objects.get(id=text_id)
+            text_instance = Text.objects.get(idx=text_id)
             text_instance.text = text
             text_instance.save()
 

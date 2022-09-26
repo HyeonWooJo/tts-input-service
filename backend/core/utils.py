@@ -60,9 +60,13 @@ def text_validation(text):
     return value
 
 
-def audio_maker(id):
-    """음원 생성 함수"""
-    file = f'{id}.wav'
-    f = open(f'{settings.BASE_DIR}/media/project/{id}.wav', 'w')
-    f.close
-    return file
+class AudioOperator:
+    def audio_maker(id):
+        """음원 생성 함수"""
+        file = f'{id}.wav'
+        f = open(f'{settings.BASE_DIR}/media/project/{id}.wav', 'w')
+        f.close
+        return file
+
+    def audio_delete(id):
+        os.remove(f'{settings.BASE_DIR}/media/project/{id}.wav')

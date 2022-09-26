@@ -18,7 +18,7 @@ from .serializers import (
     ProjectDetailSerializer
 )
 from .models import Project
-from core.utils import login_decorator
+from core.utils import login_decorator, AudioOperator
 
 
 class SignupAPIView(CreateAPIView):
@@ -143,7 +143,6 @@ class ProjectDetailMixins(mixins.RetrieveModelMixin,
         endpoint: /api/projects/<int:pk>/
         """
         return self.update(request, *args, **kwargs)
-
     
     @login_decorator
     def delete(self, request, *args, **kwargs):
@@ -151,6 +150,5 @@ class ProjectDetailMixins(mixins.RetrieveModelMixin,
         프로젝트 상세 삭제 API
         endpoint: /api/projects/<int:pk>/
         """
-        if not request.user.is_staff:
-            raise ValidationError('권한이 없습니다.')
-        return self.delete(request, *args, **kwargs)
+        AudioOperator.audio_delete(self.kwargs.get('pk'))
+        return self.destroy(request, *args, **kwargs)
