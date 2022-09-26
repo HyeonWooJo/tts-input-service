@@ -69,7 +69,7 @@ class Project(models.Model):
 
 class Audio(models.Model):
     """오디오 모델"""
-    
+    audio_file = models.FileField(null=True)
     speed = models.FloatField(verbose_name="스피드", max_length=10)
     identifier = models.UUIDField( 
         default=uuid.uuid4,

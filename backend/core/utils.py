@@ -4,6 +4,7 @@ import re
 
 from apis.models  import User
 from django.http   import JsonResponse
+from django.conf import settings
 
 def login_decorator(func):
 
@@ -57,3 +58,10 @@ def text_validation(text):
             value.append(text[i])
 
     return value
+
+
+def audio_maker(id):
+    file = f'{id}.wav'
+    f = open(f'{settings.BASE_DIR}/media/project/{id}.wav', 'w')
+    f.close
+    return file
