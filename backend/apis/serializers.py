@@ -1,5 +1,3 @@
-import re
-
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
@@ -63,21 +61,6 @@ class SignInSerializer(TokenObtainPairSerializer):
         return data
 
 
-class AudioSerializer(serializers.ModelSerializer):
-    "오디오 Serializer"
-    class Meta:
-        model = Audio
-        fields = '__all__'
-
-
-class TextSerializer(serializers.ModelSerializer):
-    "텍스트 Serializer"
-
-    class Meta:
-        model = Text
-        fields = '__all__'
-
-
 class ProjectSerializer(serializers.ModelSerializer):
     """프로젝트 Serializer"""
     text = serializers.CharField(write_only=True)
@@ -131,7 +114,7 @@ class ProjectSerializer(serializers.ModelSerializer):
 class ProjectDetailSerializer(serializers.ModelSerializer):
     """프로젝트 디테일 Serializer"""
     text = serializers.SerializerMethodField()
-    speed = serializers.IntegerField(write_only=True)
+    speed = serializers.FloatField(write_only=True)
     identifier = serializers.SerializerMethodField()
     text_ids = serializers.ListField(child=serializers.IntegerField(), write_only=True)
     text_list = serializers.ListField(child=serializers.CharField(),write_only=True)

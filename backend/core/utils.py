@@ -2,9 +2,11 @@ import jwt
 import os
 import re
 
-from apis.models  import User
 from django.http   import JsonResponse
 from django.conf import settings
+
+from apis.models  import User
+
 
 def login_decorator(func):
 
