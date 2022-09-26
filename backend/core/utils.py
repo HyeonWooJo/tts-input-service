@@ -2,8 +2,11 @@ import jwt
 import os
 import re
 
-from apis.models  import User
 from django.http   import JsonResponse
+from django.conf import settings
+
+from apis.models  import User
+
 
 def login_decorator(func):
 
@@ -57,3 +60,15 @@ def text_validation(text):
             value.append(text[i])
 
     return value
+
+
+class AudioOperator:
+    def audio_maker(id):
+        """음원 생성 함수"""
+        file = f'{id}.wav'
+        f = open(f'{settings.BASE_DIR}/media/project/{id}.wav', 'w')
+        f.close
+        return file
+
+    def audio_delete(id):
+        os.remove(f'{settings.BASE_DIR}/media/project/{id}.wav')

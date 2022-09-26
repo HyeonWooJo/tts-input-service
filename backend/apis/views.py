@@ -1,14 +1,10 @@
 from django.contrib.auth import get_user_model
-from django.http import HttpResponse
 
 from rest_framework import status, mixins, generics
 from rest_framework.generics import CreateAPIView, DestroyAPIView
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework import status
-from rest_framework.views import APIView
-from rest_framework.permissions import AllowAny
-from rest_framework.response import Response
 from rest_framework.exceptions import ValidationError
 
 from .serializers import (
@@ -18,7 +14,7 @@ from .serializers import (
     ProjectDetailSerializer
 )
 from .models import Project
-from core.utils import login_decorator
+from core.utils import login_decorator, AudioOperator
 
 
 class SignupAPIView(CreateAPIView):
@@ -135,3 +131,20 @@ class ProjectDetailMixins(mixins.RetrieveModelMixin,
         endpoint: /api/projects/<int:pk>/
         """
         return self.retrieve(request, *args, **kwargs)
+
+    @login_decorator
+    def put(self, request, *args, **kwargs):
+        """
+        프로젝트 상세 수정 API
+        endpoint: /api/projects/<int:pk>/
+        """
+        return self.update(request, *args, **kwargs)
+    
+    @login_decorator
+    def delete(self, request, *args, **kwargs):
+        """
+        프로젝트 상세 삭제 API
+        endpoint: /api/projects/<int:pk>/
+        """
+        AudioOperator.audio_delete(self.kwargs.get('pk'))
+        return self.destroy(request, *args, **kwargs)

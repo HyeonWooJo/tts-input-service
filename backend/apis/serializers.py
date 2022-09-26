@@ -1,5 +1,3 @@
-import re
-
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
@@ -7,7 +5,7 @@ from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from django.db import transaction
 
 from .models import User, Project, Audio, Text
-from core.utils import text_validation
+from core.utils import text_validation, AudioOperator
 
 
 class SignupSerializer(serializers.ModelSerializer):
@@ -80,7 +78,7 @@ class ProjectSerializer(serializers.ModelSerializer):
 
     def get_text_list(self, obj):
         audio = Audio.objects.get(project=obj)
-        text_list = [(text.id, text.text) for text in Text.objects.filter(audio=audio)]
+        text_list = [(text.idx, text.text) for text in Text.objects.filter(audio=audio)]
         return text_list
 
     def validate_text(self, text):
@@ -97,12 +95,13 @@ class ProjectSerializer(serializers.ModelSerializer):
             )
             audio = Audio.objects.create(
                 speed = validated_data['speed'],
-                project = project
+                project = project,
+                audio_file = AudioOperator.audio_maker(project.id)
             )
 
             bulk_list = []
-            for text in validated_data['text']:
-                bulk_list.append(Text(text=text, audio=audio))
+            for idx, text in enumerate(validated_data['text']):
+                bulk_list.append(Text(text=text, audio=audio, idx=idx+1))
 
             Text.objects.bulk_create(bulk_list)
             return project
@@ -115,34 +114,55 @@ class ProjectSerializer(serializers.ModelSerializer):
 class ProjectDetailSerializer(serializers.ModelSerializer):
     """프로젝트 디테일 Serializer"""
     text = serializers.SerializerMethodField()
-    speed = serializers.SerializerMethodField()
+    speed = serializers.FloatField(write_only=True)
     identifier = serializers.SerializerMethodField()
+    text_ids = serializers.ListField(child=serializers.IntegerField(), write_only=True)
+    text_list = serializers.ListField(child=serializers.CharField(),write_only=True)
     
     class Meta:
         model = Project
         fields = [
-            'project_title',
             'text',
             'speed',
-            'identifier'
+            'identifier',
+            'text_ids',
+            'text_list'
         ]
 
     def get_text(self, obj):
         """"page 별 10개의 문장까지 조회 가능"""
-        page = int(self.context['request'].query_params['page'])
-        page_size = 10
-        limit = int(page_size * page)
-        offset = int(limit - page_size)
+        page = self.context['request'].query_params.get('page', False)
+        if page:
+            page = int(self.context['request'].query_params['page'])
+            page_size = 10
+            limit = int(page_size * page)
+            offset = int(limit - page_size)
 
-        audio = Audio.objects.get(project=obj)
-        texts = Text.objects.filter(audio=audio)[offset:limit]
-        text = ' '.join(text.text for text in texts)
-        return text
-
-    def get_speed(self, obj):
-        audio = Audio.objects.get(project=obj)
-        return audio.speed
+            audio = Audio.objects.get(project=obj)
+            texts = Text.objects.filter(audio=audio)[offset:limit]
+            text = ' '.join(text.text for text in texts)
+            return text
+        else:
+            audio = Audio.objects.get(project=obj)
+            text_list = [(text.idx, text.text) for text in Text.objects.filter(audio=audio)]
+            return text_list
 
     def get_identifier(self, obj):
         audio = Audio.objects.get(project=obj)
         return audio.identifier
+
+    def update(self, instance, validated_data):
+        text_ids = validated_data['text_ids']
+        text_list = validated_data['text_list']
+        speed = validated_data['speed']
+        
+        for text_id, text in zip(text_ids, text_list):
+            text_instance = Text.objects.get(idx=text_id)
+            text_instance.text = text
+            text_instance.save()
+
+        audio = Audio.objects.get(project=instance)
+        audio.speed = speed
+        audio.save()
+
+        return instance
