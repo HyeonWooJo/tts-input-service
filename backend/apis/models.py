@@ -87,6 +87,7 @@ class Audio(models.Model):
 class Text(models.Model):
     """텍스트 모델"""
     text = models.CharField(verbose_name="텍스트", max_length=300)
+    idx = models.IntegerField(verbose_name="텍스트 인덱스", max_length=3)
     audio = models.ForeignKey(Audio, on_delete=models.CASCADE)
 
     class Meta:

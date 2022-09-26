@@ -135,3 +135,22 @@ class ProjectDetailMixins(mixins.RetrieveModelMixin,
         endpoint: /api/projects/<int:pk>/
         """
         return self.retrieve(request, *args, **kwargs)
+
+    @login_decorator
+    def put(self, request, *args, **kwargs):
+        """
+        프로젝트 상세 수정 API
+        endpoint: /api/projects/<int:pk>/
+        """
+        return self.update(request, *args, **kwargs)
+
+    
+    @login_decorator
+    def delete(self, request, *args, **kwargs):
+        """
+        프로젝트 상세 삭제 API
+        endpoint: /api/projects/<int:pk>/
+        """
+        if not request.user.is_staff:
+            raise ValidationError('권한이 없습니다.')
+        return self.delete(request, *args, **kwargs)

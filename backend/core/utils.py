@@ -61,6 +61,7 @@ def text_validation(text):
 
 
 def audio_maker(id):
+    """음원 생성 함수"""
     file = f'{id}.wav'
     f = open(f'{settings.BASE_DIR}/media/project/{id}.wav', 'w')
     f.close
