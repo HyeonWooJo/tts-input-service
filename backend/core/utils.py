@@ -71,4 +71,5 @@ class AudioOperator:
         return file
 
     def audio_delete(id):
+        """음원 삭제 함수"""
         os.remove(f'{settings.BASE_DIR}/media/project/{id}.wav')
