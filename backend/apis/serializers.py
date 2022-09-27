@@ -159,7 +159,6 @@ class ProjectDetailSerializer(serializers.ModelSerializer):
         speed = validated_data['speed']
         audio = Audio.objects.get(project=instance)
         
-        print(text_ids, text_list)
         for text_id, text in zip(text_ids, text_list):
             text_instance = Text.objects.get(idx=text_id, audio=audio)
             text_instance.text = text
