@@ -59,9 +59,9 @@ class User(AbstractUser):
 class Project(models.Model):
     """프로젝트 모델"""
     project_title = models.CharField(verbose_name="프로젝트 이름", max_length=30)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now = True)
+    user = models.ForeignKey(User, verbose_name="유저명", on_delete=models.CASCADE)
+    created_at = models.DateTimeField(verbose_name="생성 날짜", auto_now_add=True)
+    updated_at = models.DateTimeField(verbose_name="수정 날짜", auto_now = True)
 
     class Meta:
         db_table = "projects"
@@ -69,16 +69,17 @@ class Project(models.Model):
 
 class Audio(models.Model):
     """오디오 모델"""
-    audio_file = models.FileField(null=True)
-    speed = models.FloatField(verbose_name="스피드", max_length=10)
+    audio_file = models.FileField(verbose_name="오디오 파일명", null=True)
+    speed = models.FloatField(verbose_name="속도", max_length=10)
     identifier = models.UUIDField( 
+        verbose_name="식별자",
         default=uuid.uuid4,
         unique=True,
         editable=False
         )
-    project = models.ForeignKey(Project, on_delete=models.CASCADE)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now = True)
+    project = models.ForeignKey(Project, verbose_name="프로젝트",  on_delete=models.CASCADE)
+    created_at = models.DateTimeField(verbose_name="생성 날짜", auto_now_add=True)
+    updated_at = models.DateTimeField(verbose_name="수정 날짜", auto_now = True)
 
     class Meta:
         db_table = "audios"
@@ -88,7 +89,7 @@ class Text(models.Model):
     """텍스트 모델"""
     text = models.CharField(verbose_name="텍스트", max_length=300)
     idx = models.IntegerField(verbose_name="텍스트 인덱스")
-    audio = models.ForeignKey(Audio, on_delete=models.CASCADE)
+    audio = models.ForeignKey(Audio, verbose_name="오디오", on_delete=models.CASCADE)
 
     class Meta:
         db_table = "texts"
