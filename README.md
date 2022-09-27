@@ -78,7 +78,7 @@ Language | Framwork | Database | HTTP | Tools
 
 <br>
 
----ㄴ
+---
 
 # 6. 참조 문서
 - [Postman API Docs](https://documenter.getpostman.com/view/21254145/2s83eyrGyY)
