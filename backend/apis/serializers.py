@@ -36,29 +36,33 @@ class SignInSerializer(TokenObtainPairSerializer):
     """로그인 Serializer"""
     def validate(self, data):
         """로그인 유효성 검사"""
-        username = data.get("username")
-        password = data.get("password")
+        try: 
+            username = data.get("username")
+            password = data.get("password")
 
-        user = User.objects.get(username=username)
+            user = User.objects.get(username=username)
 
-        if user:
-            if not user.is_active:
-                raise serializers.ValidationError("비활성화된 계정입니다.")
+            if user:
+                if not user.is_active:
+                    raise serializers.ValidationError(
+                        {"messsage": "비활성화된 계정입니다."}
+                    )
 
-            if not user.check_password(password):
-                raise serializers.ValidationError("아이디 또는 비밀번호를 잘못 입력했습니다.")
-        else:
-            raise serializers.ValidationError("아이디 또는 비빌먼호를 잘못 입력했습니다.")
+                if not user.check_password(password):
+                    raise serializers.ValidationError(
+                        {"messsage": "비밀번호를 잘못 입력했습니다."})
 
-        token = super().get_token(user)
-        access_token = str(token.access_token)
-        refresh_token = str(token)
+            token = super().get_token(user)
+            access_token = str(token.access_token)
+            refresh_token = str(token)
 
-        data = {
-            "access" : access_token,
-            "refresh" : refresh_token,
-        }
-        return data
+            data = {
+                "access" : access_token,
+                "refresh" : refresh_token,
+            }
+            return data
+        except User.DoesNotExist:
+            raise serializers.ValidationError({"messsage": "아이디를 잘못 입력했습니다."})
 
 
 class ProjectSerializer(serializers.ModelSerializer):

@@ -10,9 +10,9 @@ from .views import (
 
 
 urlpatterns = [
-    path("users/signup/", SignupAPIView.as_view()),
-    path("users/signin/", SigninAPIView.as_view()),
-    path("users/<int:pk>/", DeleteUserView.as_view()),
-    path("projects/", ProjectMixins.as_view()),
-    path('projects/<int:pk>/', ProjectDetailMixins.as_view()),
+    path("users/signup/", SignupAPIView.as_view(), name='signup'),
+    path("users/signin/", SigninAPIView.as_view(), name='signin'),
+    path("users/<int:pk>/", DeleteUserView.as_view(), name='user-delete'),
+    path("projects/", ProjectMixins.as_view(), name='project-c'),
+    path('projects/<int:pk>/', ProjectDetailMixins.as_view(), name='project-rud'),
 ]
