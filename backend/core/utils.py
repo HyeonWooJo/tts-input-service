@@ -19,7 +19,6 @@ def login_decorator(func):
                                 os.environ.get('ALGORITHM'))
             user          = User.objects.get(id=token_payload['user_id'])
             request.user  = user
-
             return func(self, request, *args, **kwargs) 
 
         except jwt.DecodeError:
