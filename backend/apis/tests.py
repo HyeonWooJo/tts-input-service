@@ -233,6 +233,37 @@ class ProjectTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
 
+    def test_put_key_error_fail(self):
+        """
+        400: Key error 실패 케이스
+        """
+        response = self.client.post(
+            reverse('signin'),
+            data = {
+            'username': 'test1',
+            'password': '12341234'
+            },
+            format='json'
+        )
+        token = response.data['access_token']
+        url = '/api/projects/1/'
+        data = {
+            'speedo': 3, # speedo로 key error 발생
+            'text_ids': [1],
+            'text_list': ['Bye']
+        }
+        headers = {
+            'HTTP_AUTHORIZATION': token
+        }
+        response = self.client.put(
+            url, 
+            data,
+            **headers,
+            format='json'
+        )
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+
     def test_get_success(self):
         """
         200: 프로젝트 조회 성공 케이스
@@ -251,3 +282,23 @@ class ProjectTests(APITestCase):
             format='json'
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+
+    def test_get_no_object_fail(self):
+        """
+        404: 클라이언트 없는 객체 조회 실패 케이스
+        """
+        response = self.client.post(
+            reverse('signin'),
+            data = {
+            'username': 'test1',
+            'password': '12341234'
+            },
+            format='json'
+        )
+        url = '/api/projects/2/' # project_id가 1인 객체만 있음
+        response = self.client.get(
+            url, 
+            format='json'
+        )
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
