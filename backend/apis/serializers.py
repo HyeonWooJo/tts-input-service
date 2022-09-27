@@ -31,7 +31,6 @@ class SignupSerializer(serializers.ModelSerializer):
         user.save()
         return user
 
-
 class SignInSerializer(TokenObtainPairSerializer):
     """로그인 Serializer"""
     def validate(self, data):
@@ -47,7 +46,6 @@ class SignInSerializer(TokenObtainPairSerializer):
                     raise serializers.ValidationError(
                         {"messsage": "비활성화된 계정입니다."}
                     )
-
                 if not user.check_password(password):
                     raise serializers.ValidationError(
                         {"messsage": "비밀번호를 잘못 입력했습니다."})
@@ -159,9 +157,11 @@ class ProjectDetailSerializer(serializers.ModelSerializer):
         text_ids = validated_data['text_ids']
         text_list = validated_data['text_list']
         speed = validated_data['speed']
+        audio = Audio.objects.get(project=instance)
         
+        print(text_ids, text_list)
         for text_id, text in zip(text_ids, text_list):
-            text_instance = Text.objects.get(idx=text_id)
+            text_instance = Text.objects.get(idx=text_id, audio=audio)
             text_instance.text = text
             text_instance.save()
 
