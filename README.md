@@ -61,11 +61,8 @@ Language | Framwork | Database | HTTP | Tools
 # 4. API Endpoints
 | endpoint | HTTP Method | 기능   | require parameter                                                                                                   | response data |
 |----------|-------------|------|---------------------------------------------------------------------------------------------------------------------|---------------|
-| /api/users/signup/  | POST   | 회원가입 |  useranme: str <br>
-password: str <br>
-email: str  | user_id <br> username <br> email |
-| /api/users/signin/ | POST   | 로그인 |  useranme: str <br>
-password: str  | access_token <br> refresh_token |
+| /api/users/signup/  | POST   | 회원가입 |  useranme: str <br> password: str <br> email: str  | user_id <br> username <br> email |
+| /api/users/signin/ | POST   | 로그인 |  useranme: str <br> password: str  | access_token <br> refresh_token |
 | api/users/<int:pk>/  | DELETE   | 계정 삭제 |  없음  | 계정 삭제 성공 여부 |
 | api/projects/  | POST   | 프로젝트 생성 |  project_title: str <br> speed: int <br> text: array of str | project_title <br> text_list|
 | api/projects/<int:pk>   | GET   | 텍스트 조회 |  없음 | 텍스트, 식별자 |
