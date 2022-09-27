@@ -9,7 +9,7 @@ from apis.models  import User
 
 
 def login_decorator(func):
-
+    """로그인 데코레이터"""
     def wrapper(self, request, *args, **kwargs):
         try:
             token         = request.headers.get("Authorization", None)
