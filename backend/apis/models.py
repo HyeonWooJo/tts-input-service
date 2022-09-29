@@ -1,4 +1,3 @@
-from re import L
 import uuid
 
 from django.db import models
@@ -6,7 +5,7 @@ from django.contrib.auth.models import AbstractUser, BaseUserManager
 
 
 class UserManager(BaseUserManager):
-    "유저 매니저 정의"
+    """유저 매니저 정의"""
     def create_user(self, username, email, password=None):
         if not username:
             raise ValueError("계정 이름을 입력해주세요.")
