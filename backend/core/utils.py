@@ -1,6 +1,6 @@
-import jwt
 import os
 import re
+import jwt
 
 from django.http   import JsonResponse
 from django.conf import settings

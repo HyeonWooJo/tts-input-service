@@ -4,8 +4,8 @@ from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
 from django.db import transaction
 
-from .models import User, Project, Audio, Text
 from core.utils import text_validation, AudioOperator
+from .models import User, Project, Audio, Text
 
 
 class SignupSerializer(serializers.ModelSerializer):
@@ -144,10 +144,10 @@ class ProjectDetailSerializer(serializers.ModelSerializer):
             texts = Text.objects.filter(audio=audio)[offset:limit]
             text = ' '.join(text.text for text in texts)
             return text
-        else:
-            audio = Audio.objects.get(project=obj)
-            text_list = [(text.idx, text.text) for text in Text.objects.filter(audio=audio)]
-            return text_list
+
+        audio = Audio.objects.get(project=obj)
+        text_list = [(text.idx, text.text) for text in Text.objects.filter(audio=audio)]
+        return text_list
 
     def get_identifier(self, obj):
         audio = Audio.objects.get(project=obj)
