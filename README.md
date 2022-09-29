@@ -81,3 +81,4 @@ Language | Framwork | Database | HTTP | Tools
 
 # 6. 참조 문서
 - [Postman API Docs](https://documenter.getpostman.com/view/21254145/2s83eyrGyY)
+- [프로젝트 회고](https://velog.io/@chaduri7913/tts-input-service-%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8-%ED%9A%8C%EA%B3%A0)
